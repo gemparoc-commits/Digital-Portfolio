@@ -1,0 +1,16 @@
+# Obsidian vault settings (local only)
+.obsidian/
+Untitled.base
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies / build output (also covered by frontend/.gitignore)
+node_modules/
+dist/
+.vite/
