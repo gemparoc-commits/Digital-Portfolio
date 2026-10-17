@@ -63,7 +63,46 @@ export function AboutPage() {
 
 export function ContactPage() {
   const [sent, setSent] = useState(false)
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setSent(true) }
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  return <section className="section container contact-page"><div className="contact-intro reveal"><p className="eyebrow">Start a project</p><h1>Bring me the <span>messy part.</span></h1><p className="lead muted">{profile.contactIntro}</p><div className="contact-brief"><p className="eyebrow">Helpful context</p><ul><li>What are you trying to improve?</li><li>Who will use the software?</li><li>What would a good outcome look like?</li></ul></div></div><div className="contact-form-wrap reveal reveal-delay">{sent ? <div className="success-state" aria-live="polite"><span className="success-icon">✓</span><h2>Thanks for sharing the brief.</h2><p className="muted">This front-end form is ready to connect to your inbox or preferred form service before launch.</p><button className="button button-secondary" onClick={() => setSent(false)}>Send another</button></div> : <form className="contact-form" onSubmit={onSubmit}><label>Name<input required name="name" autoComplete="name" placeholder="Your name" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@company.com" /></label><label>Project details<textarea required name="message" rows={7} placeholder="Tell me what you are building, improving, or untangling." /></label><button className="button" type="submit">Send project details <span aria-hidden="true">↗</span></button></form>}</div></section>
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+
+    if (!accessKey) {
+      setError('Form is not configured yet. Add VITE_WEB3FORMS_ACCESS_KEY to your .env file.')
+      return
+    }
+
+    setSubmitting(true)
+    setError('')
+
+    const data = new FormData(form)
+    data.append('access_key', accessKey)
+    data.append('subject', 'New project inquiry from your portfolio')
+    data.append('from_name', 'Digital Portfolio')
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: data,
+      })
+      const result = await response.json()
+
+      if (result.success) {
+        form.reset()
+        setSent(true)
+      } else {
+        setError(result.message || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setError('Could not reach the server. Please check your connection and try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return <section className="section container contact-page"><div className="contact-intro reveal"><p className="eyebrow">Start a project</p><h1>Bring me the <span>messy part.</span></h1><p className="lead muted">{profile.contactIntro}</p><div className="contact-brief"><p className="eyebrow">Helpful context</p><ul><li>What are you trying to improve?</li><li>Who will use the software?</li><li>What would a good outcome look like?</li></ul></div></div><div className="contact-form-wrap reveal reveal-delay">{sent ? <div className="success-state" aria-live="polite"><span className="success-icon">✓</span><h2>Thanks for sharing the brief.</h2><p className="muted">Your message is on its way — I will get back to you soon.</p><button className="button button-secondary" onClick={() => setSent(false)}>Send another</button></div> : <form className="contact-form" onSubmit={onSubmit}><label>Name<input required name="name" autoComplete="name" placeholder="Your name" /></label><label>Email<input required name="email" type="email" autoComplete="email" placeholder="you@company.com" /></label><label>Project details<textarea required name="message" rows={7} placeholder="Tell me what you are building, improving, or untangling." /></label><input type="checkbox" name="botcheck" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />{error && <p className="form-error" role="alert">{error}</p>}<button className="button" type="submit" disabled={submitting}>{submitting ? 'Sending…' : <>Send project details <span aria-hidden="true">↗</span></>}</button></form>}</div></section>
 }

@@ -1,10 +1,25 @@
-import { ScrollRestoration, useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
-import { PageTransition } from '../components/PageTransition'
+import { Outlet, ScrollRestoration, useLocation, useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
 import { Footer, Header } from '../components/shared'
 import { MotionObserver } from '../components/MotionObserver'
 
 export function RootLayout() {
-  return <><MotionObserver /><Header /><main><PageTransition /></main><Footer /><ScrollRestoration /></>
+  const location = useLocation()
+
+  return (
+    <>
+      <MotionObserver />
+      <Header />
+
+      <main>
+        <div key={location.pathname} className="page-transition">
+          <Outlet />
+        </div>
+      </main>
+
+      <Footer />
+      <ScrollRestoration />
+    </>
+  )
 }
 
 export function RouteError() {

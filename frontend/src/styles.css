@@ -62,14 +62,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .header-contact:hover { transform: translateY(-2px); background: var(--accent-deep); color: var(--on-accent); }
 .menu-button { display: none; min-height: 36px; border: 1px solid var(--hairline); border-radius: 8px; padding: 0 12px; background: transparent; color: var(--ink); font-size: .8rem; }
 
-.route-transition { position: relative; min-height: 1px; }
+.route-transition { position: relative; min-height: 1px; overflow-x: clip; }
 .route-transition-page { min-height: inherit; }
-.route-transition-leaving .route-transition-page { animation: page-leave .18s ease both; pointer-events: none; }
-.route-transition-entering .route-transition-page { animation: page-enter .8s cubic-bezier(.16, 1, .3, 1) both; transform-origin: 50% 0; }
-.route-transition-entering::before { content: ""; position: fixed; inset: 0; z-index: 190; pointer-events: none; background: var(--accent); animation: page-wipe .84s cubic-bezier(.76, 0, .24, 1) both; }
-@keyframes page-leave { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-12px); } }
-@keyframes page-enter { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes page-wipe { 0%, 20% { transform: translateY(0); } 100% { transform: translateY(-102%); } }
+.route-transition-leaving .route-transition-page { animation: codrops-move-to-top-fade .18s ease both; pointer-events: none; }
+.route-transition-entering .route-transition-page { animation: codrops-move-from-bottom-fade .72s ease both; transform-origin: 50% 100%; }
+.route-transition-entering::before { content: ""; position: fixed; top: 0; left: 0; z-index: 190; width: 100%; height: 3px; pointer-events: none; background: var(--accent); transform-origin: left; animation: route-progress .84s ease-out both; }
+@keyframes codrops-move-to-top-fade { from { opacity: 1; transform: translateY(0); } to { opacity: .3; transform: translateY(-36px); } }
+@keyframes codrops-move-from-bottom-fade { from { opacity: .3; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes route-progress { 0% { transform: scaleX(0); opacity: 1; } 70% { transform: scaleX(.85); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
 
 .hero { min-height: calc(100dvh - 65px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr); align-items: center; gap: clamp(48px, 8vw, 110px); padding-top: 64px; padding-bottom: 64px; }
 .hero-copy { max-width: 700px; }
@@ -251,6 +251,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: #6b7981; }
 .contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(31, 85, 119, .16); }
 .contact-form textarea { min-height: 168px; resize: vertical; }
+.form-error { margin: 0; padding: 12px 14px; border: 1px solid #b4443c; border-radius: 8px; background: rgba(180, 68, 60, .08); color: #b4443c; font-size: .84rem; }
+.contact-form button[disabled] { opacity: .6; cursor: not-allowed; transform: none; }
 .success-state { padding: 36px 5px; text-align: center; }
 .success-icon { display: grid; width: 48px; height: 48px; margin: 0 auto 18px; place-items: center; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 1.5rem; }
 .success-state h2 { margin: 0 0 12px; color: var(--ink); letter-spacing: -.045em; }
